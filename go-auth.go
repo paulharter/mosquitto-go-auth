@@ -57,6 +57,7 @@ type Cache struct {
 }
 
 var allowedBackends = map[string]bool{
+    "ishiki":   true,
 	"postgres": true,
 	"jwt":      true,
 	"redis":    true,
