@@ -285,6 +285,14 @@ func AuthPluginInit(keys []string, values []string, authOptsNum int) {
 					log.Infof("Backend registered: %s", beIface.GetName())
 					cmbackends["jwt"] = beIface.(bes.JWT)
 				}
+			case "ishiki":
+				beIface, bErr = bes.NewIshiki(authOpts, commonData.LogLevel)
+				if bErr != nil {
+					log.Fatalf("Backend register error: couldn't initialize %s backend with error %s.", bename, bErr)
+				} else {
+					log.Infof("Backend registered: %s", beIface.GetName())
+					cmbackends["ishiki"] = beIface.(bes.Ishiki)
+				}
 			case "files":
 				beIface, bErr = bes.NewFiles(authOpts, commonData.LogLevel)
 				if bErr != nil {
