@@ -1,17 +1,9 @@
 package backends
 
 import (
-	"bytes"
-	"crypto/tls"
-	"database/sql"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 
