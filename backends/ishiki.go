@@ -142,7 +142,7 @@ func (o Ishiki) GetName() string {
 
 func (o Ishiki) getClaims(tokenStr string) (*Claims, error) {
 
-	jwtToken, err := jwt.ParseUnverified(tokenStr, jwt.MapClaims{})
+	jwtToken, _, err := new(jwt.Parser).ParseUnverified(tokenStr, jwt.MapClaims{})
 
 	if err != nil {
 		log.Debugf("jwt parse error: %s\n", err)
