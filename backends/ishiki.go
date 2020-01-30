@@ -142,23 +142,17 @@ func (o Ishiki) GetName() string {
 
 func (o Ishiki) getClaims(tokenStr string) (*Claims, error) {
 
-	jwtToken, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(o.Secret), nil
-	})
+	jwtToken, err := jwt.ParseUnverified(tokenStr, jwt.MapClaims{})
 
 	if err != nil {
 		log.Debugf("jwt parse error: %s\n", err)
 		return nil, err
 	}
 
-	if !jwtToken.Valid {
-		return nil, errors.New("jwt invalid token")
-	}
-
-	claims, ok := jwtToken.Claims.(*Claims)
+	claims, ok := jwtToken.Claims.(jwt.MapClaims)
 	if !ok {
 		// no need to use a static error, this should never happen
-		log.Debugf("api/auth: expected *Claims, got %T", jwtToken.Claims)
+		log.Debugf("api/auth: claims")
 		return nil, errors.New("got strange claims")
 	}
 
