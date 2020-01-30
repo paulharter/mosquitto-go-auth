@@ -21,13 +21,12 @@ import (
 )
 
 type Ishiki struct {
-
-	UserUri      string
-	Host         string
-	Authority    string
-	Port         string
-	WithTLS      bool
-	VerifyPeer   bool
+	UserUri    string
+	Host       string
+	Authority  string
+	Port       string
+	WithTLS    bool
+	VerifyPeer bool
 
 	ParamsMode   string
 	ResponseMode string
@@ -43,7 +42,7 @@ func NewIshiki(authOpts map[string]string, logLevel log.Level) (Ishiki, error) {
 		WithTLS:      false,
 		VerifyPeer:   false,
 		ResponseMode: "status",
-		ParamsMode:   "json"
+		ParamsMode:   "json",
 	}
 
     missingOpts := ""
@@ -69,7 +68,7 @@ func NewIshiki(authOpts map[string]string, logLevel log.Level) (Ishiki, error) {
     }
 
     if authority, ok := authOpts["ishiki_authority"]; ok {
-        ishiki.authority = authority
+        ishiki.Authority = authority
     } else {
         remoteOk = false
         missingOpts += " ishiki_authority"
@@ -127,9 +126,15 @@ func (o Ishiki) GetSuperuser(token string) bool {
 func (o Ishiki) CheckAcl(token, topic, clientid string, acc int32) bool {
 
     claims, err := o.getClaims(token)
-	allowed = strings.HasPrefix(topic, fmt.Sprintf("ishiki/%s:%s/", o.authority, claims.Subject))
+
+	if err != nil {
+		log.Debugf("getClaims error: %s\n", err)
+		return false
+	}
+
+	var allowed = strings.HasPrefix(topic, fmt.Sprintf("ishiki/%s:%s/", o.Authority, claims.Subject))
     if !allowed {
-        log.Debugf("Redis check acl error: %s %s %s", topic, o.authority, claims.Subject)
+        log.Debugf("Redis check acl error: %s %s %s", topic, o.Authority, claims.Subject)
     }
 
 	return allowed
