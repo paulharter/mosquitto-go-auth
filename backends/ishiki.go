@@ -140,7 +140,7 @@ func (o Ishiki) GetName() string {
 }
 
 
-func (o Ishiki) getClaims(tokenStr string) (*Claims, error) {
+func (o Ishiki) getClaims(tokenStr string) (*jwt.MapClaims, error) {
 
 	jwtToken, _, err := new(jwt.Parser).ParseUnverified(tokenStr, jwt.MapClaims{})
 
