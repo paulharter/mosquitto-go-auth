@@ -21,15 +21,16 @@ import (
 )
 
 type Ishiki struct {
-	UserUri    string
-	Host       string
-	Authority  string
-	Port       string
-	WithTLS    bool
-	VerifyPeer bool
+	UserUri         string
+	Host            string
+	Authority       string
+	Port            string
+	WithTLS         bool
+	VerifyPeer      bool
+	Secret          string
 
-	ParamsMode   string
-	ResponseMode string
+	ParamsMode      string
+	ResponseMode    string
 }
 
 
