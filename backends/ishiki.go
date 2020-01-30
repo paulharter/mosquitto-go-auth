@@ -165,3 +165,7 @@ func (o Ishiki) getClaims(tokenStr string) (*Claims, error) {
 	return claims, nil
 }
 
+
+func (o Ishiki) Halt() {
+
+}
