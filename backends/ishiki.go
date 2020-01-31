@@ -4,29 +4,22 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
-
 	log "github.com/sirupsen/logrus"
-
 	"github.com/pkg/errors"
-
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
 type Ishiki struct {
 	UserUri         string
 	Host            string
-	Authority       string
 	Port            string
 	WithTLS         bool
 	VerifyPeer      bool
 	Secret          string
-
 	ParamsMode      string
 	ResponseMode    string
-
 	UserField 		string
 }
-
 
 func NewIshiki(authOpts map[string]string, logLevel log.Level) (Ishiki, error) {
 
@@ -63,13 +56,6 @@ func NewIshiki(authOpts map[string]string, logLevel log.Level) (Ishiki, error) {
         missingOpts += " ishiki_getuser_uri"
     }
 
-    if authority, ok := authOpts["ishiki_authority"]; ok {
-        ishiki.Authority = authority
-    } else {
-        remoteOk = false
-        missingOpts += " ishiki_authority"
-    }
-
     if hostname, ok := authOpts["ishiki_host"]; ok {
         ishiki.Host = hostname
     } else {
@@ -96,8 +82,6 @@ func NewIshiki(authOpts map[string]string, logLevel log.Level) (Ishiki, error) {
         return ishiki, errors.Errorf("Ishiki backend error: missing options%s.\n", missingOpts)
     }
 
-
-
 	return ishiki, nil
 }
 
@@ -107,7 +91,6 @@ func (o Ishiki) GetUser(token, password string) bool {
     var dataMap map[string]interface{}
     var urlValues = url.Values{}
     return jwtRequest(o.Host, o.UserUri, token, o.WithTLS, o.VerifyPeer, dataMap, o.Port, o.ParamsMode, o.ResponseMode, urlValues)
-
 }
 
 //GetSuperuser checks if the given user is a superuser.
@@ -115,7 +98,6 @@ func (o Ishiki) GetSuperuser(token string) bool {
 
     return false
 }
-
 
 
 //CheckAcl checks user authorization.
@@ -128,20 +110,18 @@ func (o Ishiki) CheckAcl(token, topic, clientid string, acc int32) bool {
 		return false
 	}
 
-	var allowed = strings.HasPrefix(topic, fmt.Sprintf("ishiki/%s:%s/", o.Authority, claims.Subject))
+	var allowed = strings.HasPrefix(topic, fmt.Sprintf("ishiki/%s/", claims.Subject))
     if !allowed {
-        log.Debugf("Redis check acl error: %s %s %s", topic, o.Authority, claims.Subject)
+        log.Debugf("Redis check acl error: %s %s", topic, claims.Subject)
     }
 
 	return allowed
 }
 
-
 //GetName returns the backend's name
 func (o Ishiki) GetName() string {
 	return "Ishiki"
 }
-
 
 func (o Ishiki) getClaims(tokenStr string) (*Claims, error) {
 
@@ -162,26 +142,5 @@ func (o Ishiki) getClaims(tokenStr string) (*Claims, error) {
 	return claims, nil
 }
 
-//func (o Ishiki) getClaims(tokenStr string) (*jwt.MapClaims, error) {
-//
-//	jwtToken, _, err := new(jwt.Parser).ParseUnverified(tokenStr, jwt.MapClaims{})
-//
-//	if err != nil {
-//		log.Debugf("jwt parse error: %s\n", err)
-//		return nil, err
-//	}
-//
-//	claims, ok := jwtToken.Claims.(jwt.MapClaims)
-//	if !ok {
-//		// no need to use a static error, this should never happen
-//		log.Debugf("api/auth: claims")
-//		return nil, errors.New("got strange claims")
-//	}
-//
-//	return claims, nil
-//}
-
-
 func (o Ishiki) Halt() {
-
 }
