@@ -23,6 +23,8 @@ type Ishiki struct {
 
 	ParamsMode      string
 	ResponseMode    string
+
+	UserField 		string
 }
 
 
@@ -36,6 +38,7 @@ func NewIshiki(authOpts map[string]string, logLevel log.Level) (Ishiki, error) {
 		VerifyPeer:   false,
 		ResponseMode: "status",
 		ParamsMode:   "json",
+		UserField:    "Subject",
 	}
 
     missingOpts := ""
@@ -140,19 +143,19 @@ func (o Ishiki) GetName() string {
 }
 
 
-func (o Ishiki) getClaims(tokenStr string) (*jwt.MapClaims, error) {
+func (o Ishiki) getClaims(tokenStr string) (*Claims, error) {
 
-	jwtToken, _, err := new(jwt.Parser).ParseUnverified(tokenStr, jwt.MapClaims{})
+	jwtToken, _, err := jwt.ParseUnverified(tokenStr, &Claims{})
 
 	if err != nil {
 		log.Debugf("jwt parse error: %s\n", err)
 		return nil, err
 	}
 
-	claims, ok := jwtToken.Claims.(jwt.MapClaims)
+	claims, ok := jwtToken.Claims.(*Claims)
 	if !ok {
 		// no need to use a static error, this should never happen
-		log.Debugf("api/auth: claims")
+		log.Debugf("api/auth: expected *Claims, got %T", jwtToken.Claims)
 		return nil, errors.New("got strange claims")
 	}
 
