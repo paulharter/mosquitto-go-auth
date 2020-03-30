@@ -110,7 +110,7 @@ func (o Ishiki) CheckAcl(token, topic, clientid string, acc int32) bool {
 		return false
 	}
 
-	var allowed = strings.HasPrefix(topic, fmt.Sprintf("ishiki/%s/", claims.Subject))
+	var allowed = strings.HasPrefix(topic, fmt.Sprintf("%s/", claims.Subject))
     if !allowed {
         log.Debugf("Redis check acl error: %s %s", topic, claims.Subject)
     }
